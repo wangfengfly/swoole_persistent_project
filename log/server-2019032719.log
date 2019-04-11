@@ -1,0 +1,8 @@
+2019-03-27 19:06:33	err	fd=1, curl http response without imei.
+2019-03-27 19:06:33	err	fd=1, curl http response without imei.
+2019-03-27 19:06:34	err	fd=1, curl http response without imei.
+2019-03-27 23:30:35	debug	Client: Close. fd:1
+2019-03-28 10:10:37	err	fd=2, curl http response without imei.
+2019-03-28 10:17:22	err	fd=2, curl http response without imei.
+2019-03-28 13:51:08	err	fd=2, curl http response without imei.
+2019-03-28 13:51:12	debug	Client: Close. fd:2

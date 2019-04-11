@@ -9,15 +9,18 @@ require_once(__DIR__.'/Curl.php');
 class Server{
     //redis配置
     const REDIS_IP = '127.0.0.1';
-    const REDIS_PORT = '10087';
+    const REDIS_PORT = '6379';
+    const REDIS_PASSWD = 'passwd';
+
     //redis订阅的mq名
-    const SUB_CHANNEL = 'foo';
+    const SUB_CHANNEL = 'IMEI_PUSH_MSG';
 
     // http服务接口地址
-    const URL = 'http://47.94.197.239:8080/position/api/platform/receive/message/v1?param=';
+    const URL = 'http://127.0.0.1:8080/position/api/platform/receive/message/v1?param=';
+    
     //tcp服务器监听的本地ip地址和端口
-    const IP = '127.0.0.1';
-    const PORT = 9501;
+    const IP = '172.17.16.22';
+    const PORT = 32767;
 
     const IMEIKEY_PREFIX = 'imei_';
     const FDKEY_PREFIX = 'fd_';
@@ -38,10 +41,13 @@ class Server{
     public function subFunc($redis, $chan, $msg){
         switch($chan){
             case self::SUB_CHANNEL:
+	        Log::getInstance('server')->write('subscribe msg: '.$msg, 'debug');
                 $res = json_decode($msg, true);
                 if(isset($res['imei']) && isset($res['resp'])){
                     $fd = $this->fc->get(self::IMEIKEY_PREFIX.trim($res['imei']));
-                    $this->serv->send($fd, $res['resp']);
+                    if($fd){
+		    	$this->serv->send($fd, $res['resp']);
+	  	    }
                 }
                 break;
         }
@@ -60,6 +66,8 @@ class Server{
         $serv->on('ManagerStart', function($serv){
             $redis = new Redis();
             $redis->pconnect(self::REDIS_IP, self::REDIS_PORT);
+            $redis->auth(self::REDIS_PASSWD);
+            //设置读超时无限，否则会因为长时间没有读数据，redis关闭连接。
             $redis->setOption(Redis::OPT_READ_TIMEOUT, -1);
             try{
                 $redis->subscribe([self::SUB_CHANNEL], array($this, 'subFunc'));
@@ -72,6 +80,7 @@ class Server{
             $http_resp = Curl::get(self::URL.$data);
             $res = json_decode($http_resp, true);
             if(isset($res['imei'])){
+	        Log::getInstance('server')->write("client msg received", 'debug');
                 $imei = trim($res['imei']);
                 $imeikey = self::IMEIKEY_PREFIX.$imei;
                 $fdkey = self::FDKEY_PREFIX.$fd;
