@@ -1,6 +1,7 @@
 <?php
 set_time_limit(0);
 ini_set("memory_limit", "-1");
+ini_set('default_socket_timeout', -1);
 
 require_once(__DIR__.'/FileCache.php');
 require_once(__DIR__.'/Log.php');
@@ -41,13 +42,14 @@ class Server{
     public function subFunc($redis, $chan, $msg){
         switch($chan){
             case self::SUB_CHANNEL:
-	        Log::getInstance('server')->write('subscribe msg: '.$msg, 'debug');
+		        $logger = new Log('server');
+	            $logger->write('subscribe msg: '.$msg, 'debug');
                 $res = json_decode($msg, true);
                 if(isset($res['imei']) && isset($res['resp'])){
                     $fd = $this->fc->get(self::IMEIKEY_PREFIX.trim($res['imei']));
                     if($fd){
-		    	$this->serv->send($fd, $res['resp']);
-	  	    }
+		    	        $this->serv->send($fd, $res['resp']);
+	  	            }
                 }
                 break;
         }
@@ -66,21 +68,26 @@ class Server{
         $serv->on('ManagerStart', function($serv){
             $redis = new Redis();
             $redis->pconnect(self::REDIS_IP, self::REDIS_PORT);
-            $redis->auth(self::REDIS_PASSWD);
-            //设置读超时无限，否则会因为长时间没有读数据，redis关闭连接。
+	        $redis->auth(self::REDIS_PASSWD);
             $redis->setOption(Redis::OPT_READ_TIMEOUT, -1);
             try{
                 $redis->subscribe([self::SUB_CHANNEL], array($this, 'subFunc'));
             }catch(Exception $ex){
-                Log::getInstance('server')->write('redis subscribe error.', 'debug');
+		        $logger = new Log('server');
+                $logger->write('exception: '.$ex->getMessage(), 'debug');
             }
         });
 
         $serv->on('receive', function($serv, $fd, $from_id, $data){
-            $http_resp = Curl::get(self::URL.$data);
+
+            $retry = 0;
+            do{
+                $http_resp = Curl::get(self::URL.$data);
+                $retry++;
+            }while($http_resp==false && $retry<=3);
+
             $res = json_decode($http_resp, true);
             if(isset($res['imei'])){
-	        Log::getInstance('server')->write("client msg received", 'debug');
                 $imei = trim($res['imei']);
                 $imeikey = self::IMEIKEY_PREFIX.$imei;
                 $fdkey = self::FDKEY_PREFIX.$fd;
@@ -93,7 +100,8 @@ class Server{
                     $serv->send($fd, $res['resp']);
                 }
             }else{
-                Log::getInstance('server')->write("fd=$fd, curl http response without imei.", 'err');
+		        $logger = new Log('server');
+		        $logger->write("fd=$fd, curl http response without imei.", 'err');
             }
 
         });
@@ -104,7 +112,8 @@ class Server{
             $imeikey = self::IMEIKEY_PREFIX.$imei;
             $this->fc->remove($fdkey);
             $this->fc->remove($imeikey);
-            Log::getInstance('server')->write("Client: Close. fd:$fd", 'debug');
+            $logger = new Log('server');
+            $logger->write("Client: Close. fd:$fd", 'debug');
         });
 
         $serv->start();

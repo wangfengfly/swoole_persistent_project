@@ -16,7 +16,7 @@ class Log {
         'err' => self::LEVEL_ERR,
     ];
 
-    private function __construct($filename){
+    public function __construct($filename){
         $dir = __DIR__.'/log/';
         if(!file_exists($dir)){
             mkdir($dir);
