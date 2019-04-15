@@ -1,0 +1,12 @@
+2019-04-13 21:46:11	debug	subscribe msg: {"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:11	debug	write to tcp socket success, msg: {"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:38	debug	subscribe msg: {"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:38	debug	write to tcp socket success, msg: {"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:38	debug	subscribe msg: {"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:38	debug	write to tcp socket success, msg: {"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:51	debug	subscribe msg: {"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:51	debug	write to tcp socket success, msg: {"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:52	debug	subscribe msg: {"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:52	debug	write to tcp socket success, msg: {"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:48:22	debug	subscribe msg: {"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:48:22	debug	write to tcp socket success, msg: {"imei":"xxxx","resp":"aaaa"}

@@ -1,0 +1,7 @@
+2019-04-13 21:45:26	debug	Client: Close. fd:1
+2019-04-13 21:46:11	err	fd not exists, msg={"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:38	err	fd not exists, msg={"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:38	err	fd not exists, msg={"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:51	err	fd not exists, msg={"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:46:52	err	fd not exists, msg={"imei":"xxxx","resp":"aaaa"}
+2019-04-13 21:48:22	err	fd not exists, msg={"imei":"xxxx","resp":"aaaa"}
