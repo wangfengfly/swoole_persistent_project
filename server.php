@@ -49,7 +49,7 @@ class Server{
             }else{
                 $retry = 0;
                 do{
-                    $http_resp = Curl::get(Config::URL.$data);
+                    $http_resp = Curl::get(Config::URL.urlencode($data));
                     $retry++;
                 }while($http_resp==false && $retry<=3);
 
